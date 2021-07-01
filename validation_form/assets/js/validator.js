@@ -1,22 +1,40 @@
 function Validator(options) {
 
+    function getParent(element, selector) {       
+        while (element.parentElement) {
+            if (element.parentElement.matches(selector)) {
+                return element.parentElement;
+            }
+            element = element.parentElement;
+        }
+    }
+
     var selectorRules = {}
 
     function validate(inputElement, rule) {
         var errorMessage;
-        var errorElement = inputElement.parentElement.querySelector(options.errorSelector)
+        var inputParentElement = getParent(inputElement, options.formGroupSelector);
+        var errorElement = inputParentElement.querySelector(options.errorSelector)
         var rules = selectorRules[rule.selector]
-      
-        for (var i = 0; i < rules.length; i++) {
-            errorMessage = rules[i](inputElement.value)
+        for (let validateRule of rules) {
+            switch(inputElement.type) {
+                case 'checkbox':
+                case 'radio':    
+                    errorMessage = validateRule(
+                        formElement.querySelector(rule.selector + ':checked')
+                    )
+                    break;
+                default:
+                    errorMessage = validateRule(inputElement.value)
+            }
             if (errorMessage) break;
         }
 
         if (errorMessage) {
             errorElement.innerHTML = errorMessage
-            inputElement.parentElement.classList.add('invalid')
+            inputParentElement.classList.add('invalid')
         } else {
-            inputElement.parentElement.classList.remove('invalid')
+            inputParentElement.classList.remove('invalid')
             errorElement.innerHTML = ''
         }
     
@@ -29,11 +47,11 @@ function Validator(options) {
             e.preventDefault();
             var isFormValid = true;
             options.rules.forEach(function(rule) {
-                var inputElement = formElement.querySelector(rule.selector)
+                var inputElement = formElement.querySelector(rule.selector) //Get NodeList                
                 var isValid = validate(inputElement, rule);
                 if (!isValid) {
                     isFormValid = false;
-                }
+                }                
             })
 
             if (isFormValid) {
@@ -41,7 +59,25 @@ function Validator(options) {
                 if (typeof options.onSubmit === 'function') {
                     var enableInputs = formElement.querySelectorAll('[name]:not([disable])'); //Type: NodeList
                     var formValues = Array.from(enableInputs).reduce(function(values, input) {                        
-                        return (values[input.name] = input.value) && values;
+                        switch(input.type) {
+                            case 'radio':
+                                if (!input.matches(':checked')) return values;                    
+                                values[input.name] = input.value;
+                                break;
+                            case 'checkbox':                                
+                                if (!Array.isArray(values[input.name])) {
+                                    values[input.name] = [];
+                                }
+                                if (!input.matches(':checked')) return values;
+                                values[input.name].push(input.value);
+                                break;
+                            case 'file':
+                                values[input.name] = input.files;
+                                break;
+                            default:
+                                values[input.name] = input.value;
+                        }
+                        return values;
                     }, {});
                     options.onSubmit(formValues)
                 } else {
@@ -58,20 +94,23 @@ function Validator(options) {
             } else {
                 selectorRules[rule.selector] = [rule.test];
             } 
-            var inputElement = formElement.querySelector(rule.selector)
-            if (inputElement) {
-                //Blur outside the input
-                inputElement.onblur = function() {
-                    validate(inputElement, rule);
+            var inputElements = formElement.querySelectorAll(rule.selector)
+            Array.from(inputElements).forEach(function(inputElement) {
+                var inputParentElement = getParent(inputElement, options.formGroupSelector);
+                if (inputElement) {
+                    //Blur outside the input
+                    inputElement.onblur = function() {
+                        validate(inputElement, rule);
+                    }
+    
+                    //Input
+                    inputElement.oninput = function() {
+                        var errorElement = inputParentElement.querySelector(options.errorSelector)
+                        inputParentElement.classList.remove('invalid')
+                        errorElement.innerHTML = ''
+                    }
                 }
-
-                //Input
-                inputElement.oninput = function() {
-                    var errorElement = inputElement.parentElement.querySelector(options.errorSelector)
-                    inputElement.parentElement.classList.remove('invalid')
-                    errorElement.innerHTML = ''
-                }
-            }
+            })        
         })
     }
 }
@@ -80,7 +119,7 @@ Validator.isRequired = function(selector, message) {
     return {
         selector: selector,
         test: function(value) {
-            return value.trim() ? undefined : message || 'Cannot be empty'
+            return value ? undefined : message || 'Cannot be empty'
         }
     }
 }

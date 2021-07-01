@@ -8,9 +8,9 @@
       <div class="spacer"></div>
   
       <div class="form-group">
-        <label for="fullname" class="form-label">Tên đầy đủ</label>
-        <input id="fullname" name="fullname" type="text" placeholder="VD: Quân Văn" class="form-control">
-        <span class="form-message"></span>
+          <label for="fullname" class="form-label">Tên đầy đủ</label>        
+          <input id="fullname" name="fullname" type="text" placeholder="VD: Quân Văn" class="form-control">
+          <span class="form-message"></span>
       </div>
   
       <div class="form-group">
@@ -18,7 +18,52 @@
         <input id="email" name="email" type="text" placeholder="VD: email@domain.com" class="form-control">
         <span class="form-message"></span>
       </div>
+
+      <div class="form-group">
+        <label for="province" class="form-label">Tỉnh</label>
+        <select id="province" name="province" type="text" class="form-control">
+            <option value="">Chọn tỉnh / TP</option>
+            <option value="hcm">TP Hồ Chí Minh</option>
+            <option value="hn">Hà Nội</option>
+            <option value="pk">Gia Lai</option>
+        </select>
+        <span class="form-message"></span>
+      </div>
+
+      <div class="form-group horizontal">
+        <label for="gender" class="form-label">Giới tính</label>
+        <div>
+          <input name="gender" value="male" type="radio" class="form-control">Nam
+        </div>
+        <div>
+          <input name="gender" value="female" type="radio" class="form-control">Nữ
+        </div>
+        <div>
+          <input name="gender" value="other" type="radio" class="form-control">Khác
+        </div>
+        <span class="form-message"></span>
+      </div>
+
+      <div class="form-group horizontal">
+        <label for="test-checkbox" class="form-label">Test checkbox</label>
+        <div>
+          <input name="test-checkbox" type="checkbox" value="1" class="form-control">1
+        </div>
+        <div>
+          <input name="test-checkbox" type="checkbox" value="2"  class="form-control">2
+        </div>
+        <div>
+          <input name="test-checkbox" type="checkbox" value="3" class="form-control">3
+        </div>
+        <span class="form-message"></span>
+      </div>
   
+      <div class="form-group">
+        <label for="email" class="form-label">Ảnh đại diện</label>
+        <input id="avatar" name="avatar" type="file" class="form-control">
+        <span class="form-message"></span>
+      </div>
+
       <div class="form-group">
         <label for="password" class="form-label">Mật khẩu</label>
         <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" class="form-control">
@@ -39,10 +84,14 @@
 <script>
   Validator({
     form: '#form-1',
+    formGroupSelector: '.form-group',
     errorSelector: '.form-message',
     rules: [
       Validator.isRequired('#fullname'),
       Validator.isRequired('#email'),
+      Validator.isRequired('#avatar'),
+      Validator.isRequired('#province'),
+      Validator.isRequired('input[name="gender"]'),
       Validator.isEmail('#email'),
       Validator.minLength('#password', 6),
       Validator.isRequired('#password'),

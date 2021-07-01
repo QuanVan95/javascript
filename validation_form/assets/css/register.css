@@ -101,6 +101,11 @@
     background-color: #1ac7b6;
   }
   
+  .form-group.horizontal {
+    flex-direction: row;
+    /* width: 1000%; */
+  }
+
   .spacer {
     margin-top: 36px;
   }
