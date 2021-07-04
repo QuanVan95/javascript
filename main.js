@@ -32,7 +32,7 @@ function createCourse(courseData, callback) {
         headers: {
             'Content-Type': 'application/json'
         },
-        
+
         body: JSON.stringify(courseData),
     }
     fetch(coursesApi, options)
@@ -52,7 +52,7 @@ function deleteCourse(courseId) {
     }
     fetch(coursesApi + '/' + courseId, options)
         .then(response => response.json())
-        .then( () => {
+        .then(() => {
             var courseItem = document.querySelector('.course-item-' + courseId)
             console.log(courseItem);
             if (courseItem) {
@@ -64,7 +64,7 @@ function deleteCourse(courseId) {
 function handleCreateCourse() {
     var createBtn = document.querySelector('#create')
     createBtn.onclick = () => {
-        
+
         var name = document.querySelector('input[name="name"]').value
         var description = document.querySelector('input[name="description"]').value
         var courseData = {
@@ -73,26 +73,26 @@ function handleCreateCourse() {
         }
         createCourse(courseData, () => {
             getCourses(renderCourses)
-        }) 
+        })
 
     }
 }
 
 var course = {
-	name: 'JS',
-	price: 1000,
-        image: 'img-address',
-	children: {
+    name: 'JS',
+    price: 1000,
+    image: 'img-address',
+    children: {
         name: 'ReactJS'
     }
-} 
+}
 
-var {name: parentName, children: {name: childrenName}} = course
+var { name: parentName, children: { name: childrenName } } = course
 console.log(parentName, childrenName)
 
 var array1 = ['JS', ' PHP']
 var array2 = ['ReactJS', 'NodeJS']
-var array3 =[...array1, ...array2]
+var array3 = [...array1, ...array2]
 console.log(array3);
 
 var object1 = {
@@ -116,7 +116,7 @@ console.log(...array2)
 // Tagged template literals
 function highlight(...rest) {
     console.log(rest);
-} 
+}
 
 var brand = 'FB';
 var course = 'Javascript';
@@ -124,7 +124,7 @@ var course = 'Javascript';
 highlight`Bi em test ${brand} cùng với ${course} hehe!`
 
 
-var promise1 = new Promise ((resolve) => {
+var promise1 = new Promise((resolve) => {
     setTimeout(() => {
         resolve([1]);
     }, 1000)
@@ -145,7 +145,7 @@ Promise.all([promise1, promise2, promise3])
     .catch((error) => {
         console.log(error)
     })
-    
+
 var users = [
     {
         id: 113,
@@ -183,7 +183,7 @@ function getComments() {
 }
 
 function getUsersByIds(userIds) {
-    return new Promise ((resolve) => {
+    return new Promise((resolve) => {
         var result = users.filter((user) => {
             return userIds.includes(user.id)
         })
@@ -195,15 +195,15 @@ function getUsersByIds(userIds) {
 
 getComments()
     .then(comments => {
-        var userIds = comments.map(comment => { return comment.user_id})
-        
+        var userIds = comments.map(comment => { return comment.user_id })
+
         return getUsersByIds(userIds)
-                .then((users) => {
-                    return {
-                        users: users,
-                        comments: comments
-                    };
-                })
+            .then((users) => {
+                return {
+                    users: users,
+                    comments: comments
+                };
+            })
     })
     .then(data => {
         var commentBlock = document.getElementById("comment-block");
@@ -220,8 +220,8 @@ getComments()
 var postApi = 'https://jsonplaceholder.typicode.com/users'
 
 fetch(postApi)
-.then(response => response.json())
-.then(users => {
+    .then(response => response.json())
+    .then(users => {
         var htmls = users.map(user => {
             return `<li>
                 <h3>${user.name}</h3>
@@ -231,9 +231,38 @@ fetch(postApi)
         var html = htmls.join('')
         document.getElementById("user-block").innerHTML = html;
     })
-.catch(error => {
-    console.log(error)
-})
+    .catch(error => {
+        console.log(error)
+    })
 
+
+//IIFE
+const app = {
+    cars: [],
+    add(car) {
+        this.cars.push(car)
+    }
+}
+//Call app.cars = null => failed
+const app = (function (i) {
+    const cars = []
+    return {
+        get(index) {
+            return cars[index]
+        },
+        getAllCars() {
+            return cars
+        },
+        add(car) {
+            cars.push(car)
+        },
+        edit(index, car) {
+            cars[index] = car
+        },
+        delete(index) {
+            cars.splice(index, 1)
+        }
+    }
+})()
 
 
